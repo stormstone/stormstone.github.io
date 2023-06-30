@@ -1,0 +1,25 @@
+{
+    "name": "hua-blog",
+    "title": "Hua Blog",
+    "author": "Hua <stormstone8@qq.com>",
+    "version": "1.8.2",
+    "homepage": "http://stormstone.github.io",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/stormstone/stormstone.github.io"
+    },
+    "bugs": "https://github.com/stormstone/stormstone.github.io/issues",
+    "devDependencies": {
+        "grunt": "^1.1.0",
+        "grunt-banner": "~0.2.3",
+        "grunt-contrib-less": "^2.0.0",
+        "grunt-contrib-uglify": "^4.0.1",
+        "grunt-contrib-watch": "^1.1.0"
+    },
+    "scripts": {
+        "start": "bundle exec jekyll serve -w -l --host 0.0.0.0",
+        "dev": "grunt watch & npm run start",
+        "boil": "git push boilerplate boilerplate:master",
+        "push": "git push origin master --tag"
+    }
+}

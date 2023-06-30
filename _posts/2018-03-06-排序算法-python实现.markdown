@@ -1,0 +1,380 @@
+---
+layout:     post
+title:      "python实现基本排序算法"
+date:       2018-03-06 18:00:00
+author:     "SH"
+header-img: "img/post_bg_headset.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - LeetCode
+---
+
+
+![各排序对比](/img/LeetCode/【排序】各排序对比.jpg)
+
+
+## **一、冒泡排序**
+
+基本思想是:两两比较相邻记录的关键字,如果反序则交换
+
+冒泡排序时间复杂度最好的情况为O(n),最坏的情况是O(n^2) 
+
+```python
+def bubble_sort(array):
+    for i in range(len(array) - 1):
+        for j in range(len(array) - i - 1):
+            if array[j] > array[j + 1]:
+                array[j], array[j + 1] = array[j + 1], array[j]
+```
+
+改进思路1：设置标志位，明显如果有一趟没有发生交换（flag = false)，说明排序已经完成
+```python
+def bubble_sort(array):
+    for i in range(len(array) - 1):
+        current_status = False
+        for j in range(len(array) - i - 1):
+            if array[j] > array[j + 1]:
+                array[j], array[j + 1] = array[j + 1], array[j]
+                current_status = True
+        if not current_status:
+            break
+```
+
+改进思路2：记录一轮下来标记的最后位置，下次从头部遍历到这个位置就Ok
+
+## **二、直接插入排序**
+
+将一个记录插入到已经排好序的有序表中, 从而得到一个新的,记录数增1的有序表 
+
+时间复杂度也为O(n^2), 比冒泡法和选择排序的性能要更好一些
+```python
+def insert_sort(array):
+    for i in range(1, len(array)):
+        min = array[i]
+        j = i - 1
+        while j >= 0 and array[j] > min:
+            array[j + 1] = array[j]
+            j -= 1
+        array[j + 1] = min
+```
+
+
+## **三、简单选择排序**
+
+通过n-i次关键字之间的比较,从n-i+1 个记录中选择关键字最小的记录,并和第i(1<=i<=n)个记录交换之
+
+ 尽管与冒泡排序同为O(n^2),但简单选择排序的性能要略优于冒泡排序
+```python
+def select_sort(array):
+    for i in range(len(array) - 1):
+        min = i
+        for j in range(i + 1, len(array)):
+            if array[j] < array[min]:
+                min = j
+                array[i], array[min] = array[min], array[i]
+```
+
+
+## **四、希尔排序**
+
+先将整个待排元素序列分割成若干子序列（由相隔某个“增量”的元素组成的）分别进行直接插入排序，然后依次缩减增量再进行排序，待整个序列中的元素基本有序（增量足够小）时，再对全体元素进行一次直接插入排序（增量为1）。其时间复杂度为O(n^3/2),要好于直接插入排序的O(n^2)
+
+```python
+def shell_sort(li):
+    """希尔排序"""
+    gap = len(li) // 2
+    while gap > 0:
+        for i in range(gap, len(li)):
+            tmp = li[i]
+            j = i - gap
+            while j >= 0 and tmp < li[j]:
+                li[j + gap] = li[j]
+                j -= gap
+            li[j + gap] = tmp
+        gap //= 2
+```
+
+
+## **五、归并排序**
+
+假设初始序列含有n个记录,则可以看成n个有序的子序列,每个子序列的长度为1,然后两两归并,得到(不小于n/2的最小整数)个长度为2或1的有序子序列,再两两归并,...如此重复,直至得到一个长度为n的有序序列为止,这种排序方法称为2路归并排序。 时间复杂度为O(nlogn),空间复杂度为O(n+logn),如果非递归实现归并,则避免了递归时深度为logn的栈空间 空间复杂度为O(n)
+
+```python
+def merge(left, right):
+    i, j = 0, 0
+    result = []
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    result += left[i:]
+    result += right[j:]
+    return result
+
+
+def merge_sort(lists):
+    if len(lists) <= 1:
+        return lists
+    num = len(lists) // 2  # python3 整数除法/会变浮点，改为//
+    left = merge_sort(lists[:num])
+    right = merge_sort(lists[num:])
+    return merge(left, right)
+```
+
+
+## **六、堆排序**
+
+堆是具有下列性质的完全二叉树:每个节点的值都大于或等于其左右孩子节点的值,称为大顶堆；或者每个节点的值都小于或等于其左右孩子节点的值,称为小顶堆。
+
+堆排序就是利用堆进行排序的方法.基本思想是:将待排序的序列构造成一个大顶堆.此时,整个序列的最大值就是堆顶 的根结点.将它移走(其实就是将其与堆数组的末尾元素交换, 此时末尾元素就是最大值),然后将剩余的n-1个序列重新构造成一个堆,这样就会得到n个元素的次大值.如此反复执行,便能得到一个有序序列了。 时间复杂度为 O(nlogn),好于冒泡,简单选择,直接插入的O(n^2)
+
+```python
+def sift(array, left, right):
+    """调整"""
+    i = left  # 当前调整的小堆的父节点
+    j = 2 * i + 1  # i的左孩子
+    tmp = array[i]  # 当前调整的堆的根节点
+    while j <= right:  # 如果孩子还在堆的边界内
+        if j < right and array[j] < array[j + 1]:  # 如果i有右孩子,且右孩子比左孩子大
+            j = j + 1  # 大孩子就是右孩子
+        if tmp < array[j]:  # 比较根节点和大孩子，如果根节点比大孩子小
+            array[i] = array[j]  # 大孩子上位
+            i = j  # 新调整的小堆的父节点
+            j = 2 * i + 1  # 新调整的小堆中I的左孩子
+        else:  # 否则就是父节点比大孩子大，则终止循环
+            break
+    array[i] = tmp  # 最后i的位置由于是之前大孩子上位了，是空的，而这个位置是根节点的正确位置。
+    
+def heap(array):
+    n = len(array)
+    # 建堆，从最后一个有孩子的父亲开始，直到根节点
+    for i in range(n // 2 - 1, -1, -1):
+        # 每次调整i到结尾
+        sift(array, i, n - 1)
+    # 挨个出数
+    for i in range(n - 1, -1, -1):
+        # 把根节点和调整的堆的最后一个元素交换
+        array[0], array[i] = array[i], array[0]
+        # 再调整，从0到i-1
+        sift(array, 0, i - 1)
+```
+
+
+## **七、快速排序**
+
+通过一趟排序将要排序的数据分割成独立的两部分，其中一部分的所有数据都比另外一部分的所有数据都要小，然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，以此达到整个数据变成有序序列。时间复杂度为O(nlogn)
+```python
+def quick_sort(array, left, right):
+    if left < right:
+        mid = partition(array, left, right)
+        quick_sort(array, left, mid - 1)
+        quick_sort(array, mid + 1, right)
+    
+def partition(array, left, right):
+    tmp = array[left]
+    while left < right:
+        while left < right and array[right] >= tmp:
+            right -= 1
+        array[left] = array[right]
+        while left < right and array[left] <= tmp:
+            left += 1
+        array[right] = array[left]
+    array[left] = tmp
+    return left
+```
+
+注：上述7种都是比较排序，下面3种都是非比较排序，理论上可以达到O(n)，比比较排序要快，但是这3种都是有其应用背景才能发挥作用的，否则适得其反。
+
+
+
+
+## **八：计数排序**
+
+计数排序(Counting sort)是一种稳定的排序算法。计数排序使用一个额外的数组C，其中第i个元素是待排序数组A中值等于i的元素的个数。然后根据数组C来将A中的元素排到正确的位置。
+
+算法的步骤如下：
+
+1. 找出待排序的数组中最大和最小的元素
+2. 统计数组中每个值为*i*的元素出现的次数，存入数组*C*的第*i*项
+3. 对所有的计数累加（从*C*中的位置为1的元素开始，每一项和前一项相加）
+4. 反向填充目标数组：将每个元素*i*放在新数组的第*C(i)*项，每放一个元素就将*C(i)*减去1
+
+由于用来计数的数组C的长度取决于待排序数组中数据的范围（等于待排序数组的最大值与最小值的差加上1），这使得计数排序对于数据范围很大的数组，需要大量时间和内存。
+
+## **九：桶排序**
+
+桶排序 (Bucket sort)或所谓的箱排序，是一个排序算法，工作的原理是将数组分到有限数量的桶子里。每个桶子再个别排序（有可能再使用别的排序算法或是以递归方式继续使用桶排序进行排序）
+
+桶排序以下列程序进行：
+
+1. 设置一个定量的数组当作空桶子。
+2. 寻访串行，并且把项目一个一个放到对应的桶子去。（hash）
+3. 对每个不是空的桶子进行排序。
+4. 从不是空的桶子里把项目再放回原来的串行中。
+
+## **十：基数排序**
+
+基数排序（英语：Radix sort）是一种非比较型整数排序算法，其原理是将整数按位数切割成不同的数字，然后按每个位数分别比较。由于整数也可以表达字符串（比如名字或日期）和特定格式的浮点数，所以基数排序也不是只能使用于整数。
+
+它是这样实现的：将所有待比较数值（正整数）统一为同样的数位长度，数位较短的数前面补零。然后，从最低位开始，依次进行一次排序。这样从最低位排序一直到最高位排序完成以后, 数列就变成一个有序序列。
+
+基数排序的方式可以采用LSD（Least significant digital）或MSD（Most significant digital），LSD的排序方式由键值的最右边开始，而MSD则相反，由键值的最左边开始。
+
+
+## 测试：
+```python
+# ==============================================冒泡============================================
+def bubble_sort(array):
+    for i in range(len(array) - 1):
+        for j in range(len(array) - i - 1):
+            if array[j] > array[j + 1]:
+                array[j], array[j + 1] = array[j + 1], array[j]
+    return array
+
+
+def bubble_sort2(array):
+    for i in range(len(array) - 1):
+        current_status = False
+        for j in range(len(array) - i - 1):
+            if array[j] > array[j + 1]:
+                array[j], array[j + 1] = array[j + 1], array[j]
+                current_status = True
+        if not current_status:
+            break
+    return array
+
+
+# ==============================================插入============================================
+def insert_sort(array):
+    for i in range(1, len(array)):
+        min = array[i]
+        j = i - 1
+        while j >= 0 and array[j] > min:
+            array[j + 1] = array[j]
+            j -= 1
+        array[j + 1] = min
+    return array
+
+
+# ==============================================选择============================================
+def select_sort(array):
+    for i in range(len(array) - 1):
+        min = i
+        for j in range(i + 1, len(array)):
+            if array[j] < array[min]:
+                min = j
+                array[i], array[min] = array[min], array[i]
+    return array
+
+
+# ==============================================希尔============================================
+def shell_sort(li):
+    """希尔排序"""
+    gap = len(li) // 2
+    while gap > 0:
+        for i in range(gap, len(li)):
+            tmp = li[i]
+            j = i - gap
+            while j >= 0 and tmp < li[j]:
+                li[j + gap] = li[j]
+                j -= gap
+            li[j + gap] = tmp
+        gap //= 2
+    return li
+
+
+# ==============================================归并============================================
+def merge(left, right):
+    i, j = 0, 0
+    result = []
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    result += left[i:]
+    result += right[j:]
+    return result
+
+
+def merge_sort(lists):
+    if len(lists) <= 1:
+        return lists
+    num = len(lists) // 2  # python3 整数除法/会变浮点，改为//
+    left = merge_sort(lists[:num])
+    right = merge_sort(lists[num:])
+    return merge(left, right)
+
+
+# ==============================================堆============================================
+def sift(array, left, right):
+    """调整"""
+    i = left  # 当前调整的小堆的父节点
+    j = 2 * i + 1  # i的左孩子
+    tmp = array[i]  # 当前调整的堆的根节点
+    while j <= right:  # 如果孩子还在堆的边界内
+        if j < right and array[j] < array[j + 1]:  # 如果i有右孩子,且右孩子比左孩子大
+            j = j + 1  # 大孩子就是右孩子
+        if tmp < array[j]:  # 比较根节点和大孩子，如果根节点比大孩子小
+            array[i] = array[j]  # 大孩子上位
+            i = j  # 新调整的小堆的父节点
+            j = 2 * i + 1  # 新调整的小堆中I的左孩子
+        else:  # 否则就是父节点比大孩子大，则终止循环
+            break
+    array[i] = tmp  # 最后i的位置由于是之前大孩子上位了，是空的，而这个位置是根节点的正确位置。
+
+
+def heap(array):
+    n = len(array)
+    # 建堆，从最后一个有孩子的父亲开始，直到根节点
+    for i in range(n // 2 - 1, -1, -1):
+        # 每次调整i到结尾
+        sift(array, i, n - 1)
+    # 挨个出数
+    for i in range(n - 1, -1, -1):
+        # 把根节点和调整的堆的最后一个元素交换
+        array[0], array[i] = array[i], array[0]
+        # 再调整，从0到i-1
+        sift(array, 0, i - 1)
+    return array
+
+
+# ==============================================快排============================================
+def partition(array, left, right):
+    tmp = array[left]
+    while left < right:
+        while left < right and array[right] >= tmp:
+            right -= 1
+        array[left] = array[right]
+        while left < right and array[left] <= tmp:
+            left += 1
+        array[right] = array[left]
+    array[left] = tmp
+    return left
+
+
+def quick_sort(array, left, right):
+    if left < right:
+        mid = partition(array, left, right)
+        quick_sort(array, left, mid - 1)
+        quick_sort(array, mid + 1, right)
+    return array
+
+
+array = [1, 2, 4, 6, 4, 8, 4, 9, 100, 2]
+print(bubble_sort(array))
+print(bubble_sort2(array))
+print(insert_sort(array))
+print(select_sort(array))
+print(shell_sort(array))
+print(merge_sort(array))
+print(heap(array))
+print(quick_sort(array, 0, len(array) - 1))
+
+```
