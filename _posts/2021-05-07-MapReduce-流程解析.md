@@ -17,9 +17,9 @@ tags:
 
 介绍了MapReduce的详细流程和一些总结.
 
-### MapTask流程图![MapTask流程图](/img/MR_MapTask流程图.png)
-### ReduceTask流程图![ReduceTask流程图](/img/MR_ReduceTask流程图.png)
-### Shuffer流程图![Shuffer流程图](/img/MR_Shuffer流程图.png)
+### MapTask流程图![MapTask流程图](/img/Hadoop/MR_MapTask流程图.png)
+### ReduceTask流程图![ReduceTask流程图](/img/Hadoop/MR_ReduceTask流程图.png)
+### Shuffer流程图![Shuffer流程图](/img/Hadoop/MR_Shuffer流程图.png)
 ## 具体步骤
 逻辑上可以这样划分：1-10是MapTask ；11-16是ReduceTask；7-14是shuffer
 
