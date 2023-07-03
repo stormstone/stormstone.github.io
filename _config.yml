@@ -13,10 +13,10 @@ future: true
 
 # SNS settings
 RSS: false
-weibo_username:     70269stone
-zhihu_username:     stormstone8
-github_username:    stormstone
-twitter_username:   stormstone8
+weibo_username: 70269stone
+zhihu_username: stormstone8
+github_username: stormstone
+twitter_username: stormstone8
 
 
 
@@ -25,7 +25,7 @@ twitter_username:   stormstone8
 highlighter: rouge
 permalink: pretty
 paginate: 10
-exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
+exclude: [ "less","node_modules","Gruntfile.js","package.json","README.md" ]
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
 # If you have timezone issue (e.g. #68) in China, uncomment to use this:
 #timezone: CN  
@@ -36,7 +36,7 @@ anchorjs: true                          # if you want to customize anchor. check
 # from PR#40, to support local preview for Jekyll 3.0
 # make sure you have this gem installed
 # `$ gem install jekyll-paginate`
-plugins: [jekyll-paginate]
+plugins: [ jekyll-paginate ]
 
 
 
@@ -71,6 +71,7 @@ netease_comment: false
 # Google Analytics
 ga_track_id: 'UA-103228337-1'            # Format: UA-xxxxxx-xx
 ga_domain: stormstone.github.io
+ga_gtag_id: 'G-PGL04N6NQ8'
 
 # cnzz
 cnzz_siteid: 1274886462
@@ -101,10 +102,10 @@ page-mathjax: false
 
 
 # Friends
-friends: [{
-    title: "Boluo Studio",
-    href: "https://boluo.studio/"
-  },
+friends: [ {
+  title: "Boluo Studio",
+  href: "https://boluo.studio/"
+},
   {
     title: "winniekun",
     href: "https://winniekun.github.io/"
